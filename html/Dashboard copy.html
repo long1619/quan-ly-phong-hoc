@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+
+<!-- beautify ignore:start -->
+<html
+  lang="vi"
+  class="light-style layout-menu-fixed"
+  dir="ltr"
+  data-theme="theme-default"
+  data-assets-path="../assets/"
+  data-template="vertical-menu-template-free"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+
+    <title>Lịch sử đặt phòng - Quản lý phòng học</title>
+    <meta name="description" content="" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="../assets/vendor/fonts/boxicons.css" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="../assets/vendor/css/core.css" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="../assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="../assets/css/demo.css" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+
+    <!-- Page CSS -->
+    <style>
+      .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .history-header h4 {
+        font-weight: 700;
+        margin: 0;
+        font-size: 28px;
+      }
+
+      .export-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+
+      .export-btn:hover {
+        background: #1d4ed8;
+      }
+
+      .search-filter-section {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .search-box i {
+        position: absolute;
+        left: 12px;
+        color: #aaa;
+        pointer-events: none;
+        font-size: 18px;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 12px 16px 12px 40px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s;
+      }
+
+      .search-box input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .search-box input::placeholder {
+        color: #aaa;
+      }
+
+      .filter-select {
+        min-width: 200px;
+      }
+
+      .filter-select select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #2563eb;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: white;
+        cursor: pointer;
+        color: #2563eb;
+        font-weight: 600;
+        outline: none;
+        transition: all 0.2s;
+      }
+
+      .filter-select select:hover {
+        background-color: #f0f6ff;
+      }
+
+      .filter-select select:focus {
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .filter-select select option {
+        color: #333;
+        font-weight: normal;
+        padding: 8px;
+      }
+
+      .booking-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .booking-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.2s;
+      }
+
+      .booking-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-color: #ddd;
+      }
+
+      .booking-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      }
+
+      .booking-id-section {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .booking-status-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+
+      .booking-status-icon.approved {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .booking-status-icon.pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .booking-status-icon.rejected {
+        background: #ffebee;
+        color: #c62828;
+      }
+
+      .booking-info-header {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .booking-id {
+        font-weight: 700;
+        font-size: 16px;
+        color: #333;
+      }
+
+      .booking-datetime {
+        font-size: 13px;
+        color: #999;
+      }
+
+      .booking-status-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .badge-approved {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .badge-pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .badge-rejected {
+        background: #ffebee;
+        color: #c62828;
+      }
+
+      .booking-card-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 20px;
+      }
+
+      .booking-left-column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .booking-right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .info-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #999;
+        text-transform: uppercase;
+      }
+
+      .info-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .info-subvalue {
+        font-size: 13px;
+        color: #666;
+      }
+
+      .booking-card-footer {
+        display: flex;
+        gap: 10px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f0f0;
+      }
+
+      .action-btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn-detail {
+        background: white;
+        color: #2563eb;
+        border: 1px solid #ddd;
+      }
+
+      .btn-detail:hover {
+        background: #f0f6ff;
+        border-color: #2563eb;
+      }
+
+      .btn-edit {
+        background: white;
+        color: #2563eb;
+        border: 1px solid #ddd;
+      }
+
+      .btn-edit:hover {
+        background: #f0f6ff;
+        border-color: #2563eb;
+      }
+
+      .btn-delete {
+        background: white;
+        color: #c62828;
+        border: 1px solid #ddd;
+      }
+
+      .btn-delete:hover {
+        background: #ffebee;
+        border-color: #c62828;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+      }
+
+      .empty-state-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+      }
+
+      .empty-state-text {
+        font-size: 16px;
+        color: #999;
+        margin-bottom: 10px;
+      }
+
+      /* Detail Modal */
+      .detail-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .detail-modal.show {
+        display: flex;
+      }
+
+      .detail-modal-content {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .detail-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 24px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .detail-modal-header h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+      }
+
+      .detail-modal-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        color: #999;
+        transition: all 0.2s;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .detail-modal-close:hover {
+        color: #333;
+      }
+
+      .detail-modal-body {
+        padding: 24px;
+      }
+
+      .detail-section {
+        margin-bottom: 24px;
+      }
+
+      .detail-section:last-of-type {
+        margin-bottom: 0;
+      }
+
+      .detail-section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .detail-section-title i {
+        font-size: 18px;
+        color: #2563eb;
+      }
+
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #f5f5f5;
+      }
+
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+
+      .detail-label {
+        font-size: 13px;
+        color: #999;
+        font-weight: 500;
+      }
+
+      .detail-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        text-align: right;
+      }
+
+      .detail-value.status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
+
+      .detail-value.status.approved {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+
+      .detail-value.status.pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .detail-value.status.rejected {
+        background: #ffebee;
+        color: #c62828;
+      }
+
+      .status-history {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .status-history-item {
+        display: flex;
+        gap: 12px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        border-left: 3px solid #2563eb;
+      }
+
+      .status-history-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        color: #2e7d32;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .status-history-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .status-history-action {
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .status-history-user {
+        font-size: 12px;
+        color: #999;
+      }
+
+      .detail-modal-footer {
+        display: flex;
+        gap: 10px;
+        padding: 24px;
+        border-top: 1px solid #e0e0e0;
+        background: #f8f9fa;
+      }
+
+      .detail-modal-footer button {
+        flex: 1;
+        padding: 10px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 1px solid #ddd;
+        background: white;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .detail-modal-footer button:hover {
+        border-color: #2563eb;
+        background: #f0f6ff;
+        color: #2563eb;
+      }
+
+      .detail-modal-footer button.btn-approve {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+      }
+
+      .detail-modal-footer button.btn-approve:hover {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+      }
+
+      @media (max-width: 768px) {
+        .booking-card-content {
+          grid-template-columns: 1fr;
+        }
+
+        .search-filter-section {
+          flex-direction: column;
+        }
+
+        .search-box,
+        .filter-select {
+          width: 100%;
+        }
+
+        .booking-card-header {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .booking-id-section {
+          width: 100%;
+        }
+
+        .detail-modal-content {
+          width: 95%;
+          max-height: 95vh;
+        }
+      }
+    </style>
+
+    <!-- Helpers -->
+    <script src="../assets/vendor/js/helpers.js"></script>
+    <script src="../assets/js/config.js"></script>
+  </head>
+
+  <body>
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+      <div class="layout-container">
+        <!-- Menu -->
+        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+          <div class="app-brand demo">
+            <a href="index.html" class="app-brand-link">
+              <span class="app-brand-logo demo">
+                <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <defs>
+                    <path d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z" id="path-1"></path>
+                  </defs>
+                  <g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
+                      <g id="Icon" transform="translate(27.000000, 15.000000)">
+                        <g id="Mask" transform="translate(0.000000, 8.000000)">
+                          <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                          </mask>
+                          <use fill="#696cff" xlink:href="#path-1"></use>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </svg>
+              </span>
+              <span class="app-brand-text demo menu-text fw-bolder ms-2">Sneat</span>
+            </a>
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+              <i class="bx bx-chevron-left bx-sm align-middle"></i>
+            </a>
+          </div>
+
+          <div class="menu-inner-shadow"></div>
+
+          <ul class="menu-inner py-1">
+            <li class="menu-item">
+              <a href="index.html" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div data-i18n="Analytics">Dashboard</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="LichPhong.html" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-calendar"></i>
+                <div data-i18n="Calendar">Lịch phòng</div>
+              </a>
+            </li>
+            <li class="menu-item active">
+              <a href="LichSu.html" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-history"></i>
+                <div data-i18n="History">Lịch sử đặt phòng</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="cards-basic.html" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Rooms">Danh sách phòng</div>
+              </a>
+            </li>
+          </ul>
+        </aside>
+        <!-- / Menu -->
+
+        <!-- Layout page -->
+        <div class="layout-page">
+          <!-- Navbar -->
+          <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+            <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+              <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                <i class="bx bx-menu bx-sm"></i>
+              </a>
+            </div>
+
+            <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+              <div class="navbar-nav align-items-center">
+                <div class="nav-item d-flex align-items-center">
+                  <i class="bx bx-search fs-4 lh-0"></i>
+                  <input type="text" class="form-control border-0 shadow-none" placeholder="Tìm kiếm..." aria-label="Search..." />
+                </div>
+              </div>
+
+              <ul class="navbar-nav flex-row align-items-center ms-auto">
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="avatar avatar-online">
+                      <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                    </div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <!-- / Navbar -->
+
+          <!-- Content wrapper -->
+          <div class="content-wrapper">
+            <!-- Content -->
+            <div class="container-xxl grow container-p-y">
+              <!-- Header -->
+              <div class="history-header">
+                <h4>Lịch sử đặt phòng</h4>
+                <button class="export-btn" onclick="exportToExcel()">
+                  <i class="bx bxs-download"></i>
+                  Xuất Excel
+                </button>
+              </div>
+
+              <!-- Search & Filter -->
+              <div class="search-filter-section">
+                <div class="search-box">
+                  <i class="bx bx-search"></i>
+                  <input type="text" id="searchInput" placeholder="Tìm mã đơn..." onkeyup="filterBookings()" />
+                </div>
+                <div class="filter-select">
+                  <select id="statusFilter" onchange="filterBookings()">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="approved">Đã duyệt</option>
+                    <option value="pending">Chờ duyệt</option>
+                    <option value="rejected">Từ chối</option>
+                    <option value="cancelled">Đã hủy</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Booking List -->
+              <div class="booking-list" id="bookingList">
+                <!-- Booking cards will be generated here -->
+              </div>
+
+              <!-- Empty State -->
+              <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-text">Không tìm thấy đơn đặt phòng nào</div>
+              </div>
+            </div>
+
+            <!-- Detail Modal -->
+            <div class="detail-modal" id="detailModal">
+              <div class="detail-modal-content">
+                <div class="detail-modal-header">
+                  <h3 id="modalTitle">Chi tiết đặt phòng</h3>
+                  <button class="detail-modal-close" onclick="closeDetailModal()">×</button>
+                </div>
+                <div class="detail-modal-body">
+                  <!-- Thông tin chung -->
+                  <div class="detail-section">
+                    <div class="detail-section-title">
+                      <i class="bx bx-file"></i>
+                      Thông tin chung
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-label">Mã đơn:</span>
+                      <span class="detail-value" id="detailId">BP20250115001</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-label">Trạng thái:</span>
+                      <span class="detail-value status approved" id="detailStatus">Đã duyệt</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-label">Người đặt:</span>
+                      <span class="detail-value" id="detailPeople">Nguyễn Văn An</span>
+                    </div>
+                  </div>
+
+                  <!-- Thông tin phòng -->
+                  <div class="detail-section">
+                    <div class="detail-section-title">
+                      <i class="bx bx-map-pin"></i>
+                      Thông tin phòng
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-label">Phòng:</span>
+                      <span class="detail-value" id="detailRoom">A101</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-label">Vị trí:</span>
+                      <span class="detail-value" id="detailLocation">Tòa A, Tầng 1</span>
+                    </div>
+                  </div>
+
+                  <!-- Thời gian -->
+                  <div class="detail-section">
+                    <div class="detail-section-title">
+                      <i class="bx bx-time"></i>
+                      Thời gian
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-label">Ngày:</span>
+                      <span class="detail-value" id="detailDate">2025-01-15</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-label">Giờ:</span>
+                      <span class="detail-value" id="detailTime">13:00 - 15:00</span>
+                    </div>
+                    <div class="detail-row">
+                      <span class="detail-label">Mục đích:</span>
+                      <span class="detail-value" id="detailPurpose">Họp CLB Lập trình</span>
+                    </div>
+                  </div>
+
+                  <!-- Lịch sử thay đổi -->
+                  <div class="detail-section">
+                    <div class="detail-section-title">
+                      <i class="bx bx-history"></i>
+                      Lịch sử thay đổi
+                    </div>
+                    <div class="status-history" id="detailHistory">
+                      <div class="status-history-item">
+                        <div class="status-history-icon">✓</div>
+                        <div class="status-history-content">
+                          <div class="status-history-action">Phê duyệt</div>
+                          <div class="status-history-user">Admin Nguyễn • 10/01/2025 14:30</div>
+                        </div>
+                      </div>
+                      <div class="status-history-item">
+                        <div class="status-history-icon" style="color: #2563eb;">+</div>
+                        <div class="status-history-content">
+                          <div class="status-history-action">Tạo đơn</div>
+                          <div class="status-history-user">Nguyễn Văn An • 10/01/2025 10:00</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="detail-modal-footer">
+                  <button onclick="showQRCode()">
+                    <i class="bx bx-qr"></i>
+                    Tải QR Code
+                  </button>
+                  <button onclick="printBooking()">
+                    <i class="bx bx-printer"></i>
+                    In phiếu
+                  </button>
+                  <button class="btn-approve" onclick="approveBooking()" id="approveBtn">
+                    <i class="bx bx-check"></i>
+                    Duyệt
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- / Content -->
+
+            <!-- Footer -->
+            <footer class="content-footer footer bg-footer-theme">
+              <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                <div class="mb-2 mb-md-0">
+                  © <script>document.write(new Date().getFullYear());</script>, Quản lý phòng học
+                </div>
+              </div>
+            </footer>
+            <!-- / Footer -->
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <!-- Scripts -->
+    <script src="../assets/vendor/libs/jquery/jquery.js"></script>
+    <script src="../assets/vendor/libs/popper/popper.js"></script>
+    <script src="../assets/vendor/js/bootstrap.js"></script>
+    <script src="../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="../assets/vendor/js/menu.js"></script>
+    <script src="../assets/js/main.js"></script>
+
+    <script>
+      const bookingData = [
+        {
+          id: 'BP20250115001',
+          room: 'A101',
+          status: 'approved',
+          statusText: 'Đã duyệt',
+          date: '2025-01-15',
+          time: '13:00 - 15:00',
+          purpose: 'Họp CLB Lập trình',
+          contact: '0912345678',
+          people: 25
+        },
+        {
+          id: 'BP20250112001',
+          room: 'A201',
+          status: 'pending',
+          statusText: 'Chờ duyệt',
+          date: '2025-01-12',
+          time: '14:00 - 16:00',
+          purpose: 'Thực hành Java',
+          contact: '0912345678',
+          people: 30
+        },
+        {
+          id: 'BP20250110002',
+          room: 'A102',
+          status: 'approved',
+          statusText: 'Đã duyệt',
+          date: '2025-01-10',
+          time: '10:00 - 11:30',
+          purpose: 'Lớp Toán A1',
+          contact: '0912345678',
+          people: 45
+        },
+        {
+          id: 'BP20250108001',
+          room: 'A202',
+          status: 'rejected',
+          statusText: 'Đã hủy',
+          date: '2025-01-08',
+          time: '09:00 - 10:30',
+          purpose: 'Seminar công nghệ',
+          contact: '0912345678',
+          people: 50
+        },
+        {
+          id: 'BP20250105003',
+          room: 'A101',
+          status: 'approved',
+          statusText: 'Đã duyệt',
+          date: '2025-01-05',
+          time: '15:00 - 17:00',
+          purpose: 'Lớp Anh văn',
+          contact: '0912345678',
+          people: 35
+        }
+      ];
+
+      const roomInfo = {
+        'A101': 'Phòng học A101',
+        'A201': 'Lab CNTT 01',
+        'A102': 'Phòng học A102',
+        'A202': 'Phòng hội thảo'
+      };
+
+      function getStatusIcon(status) {
+        const icons = {
+          'approved': '✓',
+          'pending': '⏳',
+          'rejected': '✕'
+        };
+        return icons[status] || '';
+      }
+
+      function openDetailModal(bookingId) {
+        const booking = bookingData.find(b => b.id === bookingId);
+        if (!booking) return;
+
+        // Update modal content
+        document.getElementById('modalTitle').textContent = `Chi tiết đặt phòng #${booking.id}`;
+        document.getElementById('detailId').textContent = booking.id;
+        document.getElementById('detailStatus').textContent = booking.statusText;
+        document.getElementById('detailStatus').className = `detail-value status ${booking.status}`;
+        document.getElementById('detailPeople').textContent = 'Nguyễn Văn An';
+        document.getElementById('detailRoom').textContent = booking.room;
+        document.getElementById('detailLocation').textContent = 'Tòa A, Tầng 1';
+        document.getElementById('detailDate').textContent = booking.date;
+        document.getElementById('detailTime').textContent = booking.time;
+        document.getElementById('detailPurpose').textContent = booking.purpose;
+
+        // Show/hide approve button based on status
+        const approveBtn = document.getElementById('approveBtn');
+        if (booking.status === 'pending') {
+          approveBtn.style.display = 'flex';
+        } else {
+          approveBtn.style.display = 'none';
+        }
+
+        // Show modal
+        document.getElementById('detailModal').classList.add('show');
+      }
+
+      function closeDetailModal() {
+        document.getElementById('detailModal').classList.remove('show');
+      }
+
+      function showQRCode() {
+        alert('Hiển thị QR Code');
+      }
+
+      function printBooking() {
+        alert('In phiếu đặt phòng');
+      }
+
+      function approveBooking() {
+        alert('Duyệt đơn đặt phòng');
+        closeDetailModal();
+      }
+
+      function renderBookings(data) {
+        const bookingList = document.getElementById('bookingList');
+        const emptyState = document.getElementById('emptyState');
+
+        if (data.length === 0) {
+          bookingList.innerHTML = '';
+          emptyState.style.display = 'block';
+          return;
+        }
+
+        emptyState.style.display = 'none';
+        bookingList.innerHTML = data.map(booking => `
+          <div class="booking-card">
+            <div class="booking-card-header">
+              <div class="booking-id-section">
+                <div class="booking-status-icon ${booking.status}">
+                  ${getStatusIcon(booking.status)}
+                </div>
+                <div class="booking-info-header">
+                  <div class="booking-id">${booking.id}</div>
+                  <div class="booking-datetime">${booking.date} • ${booking.time}</div>
+                </div>
+              </div>
+              <span class="booking-status-badge badge-${booking.status}">
+                ${booking.statusText}
+              </span>
+            </div>
+
+            <div class="booking-card-content">
+              <div class="booking-left-column">
+                <div class="info-group">
+                  <span class="info-label">Phòng</span>
+                  <span class="info-value">${booking.room}</span>
+                  <span class="info-subvalue">${roomInfo[booking.room]}</span>
+                </div>
+                <div class="info-group">
+                  <span class="info-label">Số người</span>
+                  <span class="info-value">${booking.people} người</span>
+                </div>
+              </div>
+              <div class="booking-right-column">
+                <div class="info-group">
+                  <span class="info-label">Mục đích</span>
+                  <span class="info-value">${booking.purpose}</span>
+                </div>
+                <div class="info-group">
+                  <span class="info-label">Liên hệ</span>
+                  <span class="info-value">${booking.contact}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="booking-card-footer">
+              <button class="action-btn btn-detail" onclick="openDetailModal('${booking.id}')">
+                <i class="bx bx-show"></i>
+                Chi tiết
+              </button>
+              <button class="action-btn btn-edit">
+                <i class="bx bx-edit"></i>
+                Sửa
+              </button>
+              <button class="action-btn btn-delete">
+                <i class="bx bx-trash"></i>
+                Hủy
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function filterBookings() {
+        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+
+        const filtered = bookingData.filter(booking => {
+          const matchSearch = booking.id.toLowerCase().includes(searchInput) ||
+                            booking.purpose.toLowerCase().includes(searchInput) ||
+                            booking.room.toLowerCase().includes(searchInput);
+          const matchStatus = !statusFilter || booking.status === statusFilter;
+          return matchSearch && matchStatus;
+        });
+
+        renderBookings(filtered);
+      }
+
+      function exportToExcel() {
+        const csv = [
+          ['Mã đơn', 'Phòng', 'Ngày', 'Giờ', 'Mục đích', 'Số người', 'Trạng thái', 'Liên hệ'],
+          ...bookingData.map(b => [
+            b.id,
+            b.room,
+            b.date,
+            b.time,
+            b.purpose,
+            b.people,
+            b.statusText,
+            b.contact
+          ])
+        ];
+
+        const csvContent = csv.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `lich-su-dat-phong-${new Date().getTime()}.csv`;
+        link.click();
+      }
+
+      // Initialize
+      document.addEventListener('DOMContentLoaded', function() {
+        renderBookings(bookingData);
+      });
+
+      // Close modal when clicking outside
+      document.addEventListener('click', function(e) {
+        const modal = document.getElementById('detailModal');
+        if (e.target === modal) {
+          closeDetailModal();
+        }
+      });
+    </script>
+  </body>
+</html>

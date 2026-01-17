@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phê duyệt đơn đặt phòng</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #1a202c;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card.pending {
+            border-left-color: #f59e0b;
+            background: linear-gradient(135deg, #fff9e6 0%, #ffffff 100%);
+        }
+
+        .stat-card.approved {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, #e6fff5 0%, #ffffff 100%);
+        }
+
+        .stat-card.rejected {
+            border-left-color: #ef4444;
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffffff 100%);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card.pending .stat-label {
+            color: #d97706;
+        }
+
+        .stat-card.approved .stat-label {
+            color: #059669;
+        }
+
+        .stat-card.rejected .stat-label {
+            color: #dc2626;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-card.pending .stat-number {
+            color: #f59e0b;
+        }
+
+        .stat-card.approved .stat-number {
+            color: #10b981;
+        }
+
+        .stat-card.rejected .stat-number {
+            color: #ef4444;
+        }
+
+        /* Tabs */
+        .tabs {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: #f7fafc;
+            color: #4a5568;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background: #edf2f7;
+        }
+
+        .tab-btn.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        }
+
+        .tab-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .tab-btn.active .tab-badge {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Booking Cards */
+        .bookings-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            padding: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #e2e8f0;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .booking-card.pending {
+            border-left-color: #f59e0b;
+        }
+
+        .booking-card.approved {
+            border-left-color: #10b981;
+        }
+
+        .booking-card.rejected {
+            border-left-color: #ef4444;
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .booking-code {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-badge.approved {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .booking-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: #1a202c;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-approve {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-reject {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-detail {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-detail:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .rejection-reason {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .rejection-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #dc2626;
+            margin-bottom: 4px;
+        }
+
+        .rejection-text {
+            font-size: 14px;
+            color: #991b1b;
+        }
+
+        /* Modal Detail */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .detail-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .section-icon.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .section-icon.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .section-icon.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .section-icon.danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            margin-top: 12px;
+        }
+
+        .user-avatar-large {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .user-contact {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .room-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .room-code-large {
+            font-size: 64px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .room-name-large {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        .facilities-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .facility-tag {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: #e5e7eb;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: #f9fafb;
+            border-radius: 12px;
+            border-left: 4px solid;
+        }
+
+        .timeline-item.created {
+            border-left-color: #3b82f6;
+        }
+
+        .timeline-item.approved {
+            border-left-color: #10b981;
+        }
+
+        .timeline-item.rejected {
+            border-left-color: #ef4444;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -36px;
+            top: 20px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px;
+        }
+
+        .timeline-item.created .timeline-dot {
+            background: #3b82f6;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+
+        .timeline-item.approved .timeline-dot {
+            background: #10b981;
+            box-shadow: 0 0 0 2px #10b981;
+        }
+
+        .timeline-item.rejected .timeline-dot {
+            background: #ef4444;
+            box-shadow: 0 0 0 2px #ef4444;
+        }
+
+        .timeline-action {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .timeline-user {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .modal-footer {
+            padding: 20px 32px;
+            border-top: 2px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+            background: #f9fafb;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .btn-large {
+            flex: 1;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-close-modal {
+            background: white;
+            color: #4b5563;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-close-modal:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        /* Responsive */
+        /* @media (max-width: 768px) {
+            .booking-info {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-actions {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: nowrap;
+                overflow-x: scroll;
+            }
+
+            .modal-content {
+                max-width: 100%;
+                border-radius: 0;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Phê duyệt</h1>
+            <p>Phê duyệt đơn đặt phòng</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card pending">
+                <div class="stat-label">Chờ duyệt</div>
+                <div class="stat-number">2</div>
+            </div>
+
+            <div class="stat-card approved">
+                <div class="stat-label">Đã duyệt</div>
+                <div class="stat-number">1</div>
+            </div>
+
+            <div class="stat-card rejected">
+                <div class="stat-label">Từ chối</div>
+                <div class="stat-number">1</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="filterBookings('all')">
+                Tất cả <span class="tab-badge">4</span>
+            </button>
+            <button class="tab-btn" onclick="filterBookings('pending')">
+                Chờ duyệt <span class="tab-badge">2</span>
+            </button>
+            <button class="tab-btn" onclick="filterBookings('approved')">
+                Đã duyệt <span class="tab-badge">1</span>
+            </button>
+            <button class="tab-btn" onclick="filterBookings('rejected')">
+                Từ chối <span class="tab-badge">1</span>
+            </button>
+        </div>
+
+        <!-- Bookings List -->
+        <div class="bookings-list" id="bookingsList">
+            <!-- Booking 1: Chờ duyệt -->
+            <div class="booking-card pending" data-status="pending">
+                <div class="booking-header">
+                    <div class="booking-code">BP002</div>
+                    <span class="status-badge pending">⏳ Chờ duyệt</span>
+                </div>
+
+                <div class="booking-info">
+                    <div class="info-item">
+                        <div class="info-label">Người đặt</div>
+                        <div class="user-info">
+                            <div class="user-avatar">NA</div>
+                            <div class="info-value">Nguyễn Văn An</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Phòng</div>
+                        <div class="info-value">A201<br><small style="color: #718096;">Lab CNTT 01</small></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Ngày & Giờ</div>
+                        <div class="info-value">2025-01-12<br>14:00-16:00</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Mục đích</div>
+                        <div class="info-value">Thực hành Java</div>
+                    </div>
+                </div>
+
+                <div class="booking-actions">
+                    <button class="btn btn-detail" onclick="viewDetail('BP002', 'pending')">
+                        👁 Chi tiết
+                    </button>
+                    <button class="btn btn-approve" onclick="approveBooking('BP002')">
+                        ✓ Phê duyệt
+                    </button>
+                    <button class="btn btn-reject" onclick="rejectBooking('BP002')">
+                        ✕ Từ chối
+                    </button>
+                </div>
+            </div>
+
+            <!-- Booking 2: Chờ duyệt -->
+            <div class="booking-card pending" data-status="pending">
+                <div class="booking-header">
+                    <div class="booking-code">BP003</div>
+                    <span class="status-badge pending">⏳ Chờ duyệt</span>
+                </div>
+
+                <div class="booking-info">
+                    <div class="info-item">
+                        <div class="info-label">Người đặt</div>
+                        <div class="user-info">
+                            <div class="user-avatar">LC</div>
+                            <div class="info-value">Lê Văn Cường</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Phòng</div>
+                        <div class="info-value">B101<br><small style="color: #718096;">Phòng họp thảo</small></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Ngày & Giờ</div>
+                        <div class="info-value">2025-01-15<br>09:00-11:00</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Mục đích</div>
+                        <div class="info-value">Họp Hội đồng Khoa</div>
+                    </div>
+                </div>
+
+                <div class="booking-actions">
+                    <button class="btn btn-detail" onclick="viewDetail('BP003', 'pending')">
+                        👁 Chi tiết
+                    </button>
+                    <button class="btn btn-approve" onclick="approveBooking('BP003')">
+                        ✓ Phê duyệt
+                    </button>
+                    <button class="btn btn-reject" onclick="rejectBooking('BP003')">
+                        ✕ Từ chối
+                    </button>
+                </div>
+            </div>
+
+            <!-- Booking 3: Đã duyệt -->
+            <div class="booking-card approved" data-status="approved">
+                <div class="booking-header">
+                    <div class="booking-code">BP001</div>
+                    <span class="status-badge approved">✓ Đã duyệt</span>
+                </div>
+
+                <div class="booking-info">
+                    <div class="info-item">
+                        <div class="info-label">Người đặt</div>
+                        <div class="user-info">
+                            <div class="user-avatar">TB</div>
+                            <div class="info-value">Trần Thị Bình</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Phòng</div>
+                        <div class="info-value">A101<br><small style="color: #718096;">Phòng học A101</small></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Ngày & Giờ</div>
+                        <div class="info-value">2025-01-10<br>13:00-15:00</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Mục đích</div>
+                        <div class="info-value">Họp CLB Lập trình</div>
+                    </div>
+                </div>
+
+                <div class="booking-actions">
+                    <button class="btn btn-detail" onclick="viewDetail('BP001', 'approved')">
+                        👁 Chi tiết
+                    </button>
+                </div>
+            </div>
+
+            <!-- Booking 4: Từ chối -->
+            <div class="booking-card rejected" data-status="rejected">
+                <div class="booking-header">
+                    <div class="booking-code">BP004</div>
+                    <span class="status-badge rejected">✕ Từ chối</span>
+                </div>
+
+                <div class="booking-info">
+                    <div class="info-item">
+                        <div class="info-label">Người đặt</div>
+                        <div class="user-info">
+                            <div class="user-avatar">PD</div>
+                            <div class="info-value">Phạm Thị Dung</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Phòng</div>
+                        <div class="info-value">C101<br><small style="color: #718096;">Phòng họp BGH</small></div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Ngày & Giờ</div>
+                        <div class="info-value">2025-01-08<br>10:00-12:00</div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-label">Mục đích</div>
+                        <div class="info-value">Workshop AI</div>
+                    </div>
+                </div>
+
+                <div class="rejection-reason">
+                    <div class="rejection-label">LÝ DO TỪ CHỐI:</div>
+                    <div class="rejection-text">Phòng đã có lịch họp quan trọng của Ban Giám Hiệu trong khung giờ này.
+                    </div>
+                </div>
+
+                <div class="booking-actions">
+                    <button class="btn btn-detail" onclick="viewDetail('BP004', 'rejected')">
+                        👁 Chi tiết
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Chi tiết -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Chi tiết đơn đặt phòng</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Thông tin cơ bản -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <div class="section-icon primary">📋</div>
+                        Thông tin đơn đặt phòng
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Mã đơn</div>
+                            <div class="detail-value" id="detailCode">BP002</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Trạng thái</div>
+                            <div class="detail-value" id="detailStatus">
+                                <span class="status-badge pending">⏳ Chờ duyệt</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Ngày tạo</div>
+                            <div class="detail-value">10/01/2025 09:30</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Số người tham gia</div>
+                            <div class="detail-value" id="detailParticipants">30 người</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin người đặt -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <div class="section-icon success">👤</div>
+                        Thông tin người đặt
+                    </div>
+                    <div class="user-card">
+                        <div class="user-avatar-large" id="detailUserAvatar">NA</div>
+                        <div class="user-details">
+                            <div class="user-name" id="detailUserName">Nguyễn Văn An</div>
+                            <div class="user-role" id="detailUserRole">👨‍🎓 Sinh viên</div>
+                            <div class="user-contact">
+                                <div>📧 Email: <strong id="detailUserEmail">an.nv@student.edu.vn</strong></div>
+                                <div>📞 SĐT: <strong id="detailUserPhone">0912 345 678</strong></div>
+                                <div>🏢 Khoa: <strong id="detailUserDepartment">Công nghệ Thông tin</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin phòng -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <div class="section-icon warning">🏫</div>
+                        Thông tin phòng
+                    </div>
+                    <div class="room-preview">
+                        <div class="room-code-large" id="detailRoomCode">A201</div>
+                        <div class="room-name-large" id="detailRoomName">Lab CNTT 01</div>
+                    </div>
+                    <div class="detail-grid" style="margin-top: 16px;">
+                        <div class="detail-item">
+                            <div class="detail-label">Tòa nhà</div>
+                            <div class="detail-value">Tòa A</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tầng</div>
+                            <div class="detail-value">Tầng 2</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Sức chứa</div>
+                            <div class="detail-value">40 người</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Loại phòng</div>
+                            <div class="detail-value">Lab thực hành</div>
+                        </div>
+                    </div>
+                    <div class="facilities-list">
+                        <span class="facility-tag">💻 40 máy tính</span>
+                        <span class="facility-tag">📽️ Máy chiếu</span>
+                        <span class="facility-tag">❄️ Điều hòa</span>
+                        <span class="facility-tag">📱 Bảng thông minh</span>
+                    </div>
+                </div>
+
+                <!-- Thông tin thời gian & mục đích -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <div class="section-icon primary">🕐</div>
+                        Thông tin đặt phòng
+                    </div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Ngày sử dụng</div>
+                            <div class="detail-value" id="detailDate">Thứ 6, 12/01/2025</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Thời gian</div>
+                            <div class="detail-value" id="detailTime">14:00 - 16:00 (2 giờ)</div>
+                        </div>
+                        <div class="detail-item" style="grid-column: 1 / -1;">
+                            <div class="detail-label">Mục đích sử dụng</div>
+                            <div class="detail-value" id="detailPurpose">
+                                Thực hành lập trình Java cơ bản cho sinh viên năm 2.
+                                Các nội dung bao gồm: OOP, Collections Framework, và Exception Handling.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lịch sử phê duyệt -->
+                <div class="detail-section">
+                    <div class="section-title">
+                        <div class="section-icon danger">📜</div>
+                        Lịch sử phê duyệt
+                    </div>
+                    <div class="timeline" id="detailTimeline">
+                        <div class="timeline-item created">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-action">🆕 Tạo đơn đặt phòng</div>
+                            <div class="timeline-user">Bởi: Nguyễn Văn An</div>
+                            <div class="timeline-time">10/01/2025 lúc 09:30</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lý do từ chối (nếu có) -->
+                <div class="detail-section" id="rejectionSection" style="display: none;">
+                    <div class="rejection-reason">
+                        <div class="rejection-label">LÝ DO TỪ CHỐI:</div>
+                        <div class="rejection-text" id="detailRejectionReason"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" id="modalFooter">
+                <button class="btn-large btn-close-modal" onclick="closeModal()">
+                    Đóng
+                </button>
+                <button class="btn-large btn-approve" id="btnModalApprove" onclick="approveFromModal()">
+                    ✓ Phê duyệt
+                </button>
+                <button class="btn-large btn-reject" id="btnModalReject" onclick="rejectFromModal()">
+                    ✕ Từ chối
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentBookingCode = '';
+        let currentBookingStatus = '';
+
+        const bookingData = {
+            'BP002': {
+                code: 'BP002',
+                status: 'pending',
+                userAvatar: 'NA',
+                userName: 'Nguyễn Văn An',
+                userRole: '👨‍🎓 Sinh viên',
+                userEmail: 'an.nv@student.edu.vn',
+                userPhone: '0912 345 678',
+                userDepartment: 'Công nghệ Thông tin',
+                roomCode: 'A201',
+                roomName: 'Lab CNTT 01',
+                date: 'Thứ 6, 12/01/2025',
+                time: '14:00 - 16:00 (2 giờ)',
+                participants: '30 người',
+                purpose: 'Thực hành lập trình Java cơ bản cho sinh viên năm 2. Các nội dung bao gồm: OOP, Collections Framework, và Exception Handling.',
+                createdAt: '10/01/2025 lúc 09:30',
+                timeline: [
+                    { type: 'created', action: '🆕 Tạo đơn đặt phòng', user: 'Nguyễn Văn An', time: '10/01/2025 lúc 09:30' }
+                ]
+            },
+            'BP003': {
+                code: 'BP003',
+                status: 'pending',
+                userAvatar: 'LC',
+                userName: 'Lê Văn Cường',
+                userRole: '👨‍🎓 Sinh viên',
+                userEmail: 'cuong.lv@student.edu.vn',
+                userPhone: '0909 876 543',
+                userDepartment: 'Cơ khí',
+                roomCode: 'B101',
+                roomName: 'Phòng họp thảo',
+                date: 'Thứ 2, 15/01/2025',
+                time: '09:00 - 11:00 (2 giờ)',
+                participants: '20 người',
+                purpose: 'Họp Hội đồng Khoa về kế hoạch học kỳ II năm học 2024-2025. Thảo luận chương trình đào tạo và phân công giảng dạy.',
+                createdAt: '09/01/2025 lúc 14:15',
+                timeline: [
+                    { type: 'created', action: '🆕 Tạo đơn đặt phòng', user: 'Lê Văn Cường', time: '09/01/2025 lúc 14:15' }
+                ]
+            },
+            'BP001': {
+                code: 'BP001',
+                status: 'approved',
+                userAvatar: 'TB',
+                userName: 'Trần Thị Bình',
+                userRole: '👨‍🏫 Giảng viên',
+                userEmail: 'binh.tt@univ.edu.vn',
+                userPhone: '0987 654 321',
+                userDepartment: 'Công nghệ Thông tin',
+                roomCode: 'A101',
+                roomName: 'Phòng học A101',
+                date: 'Thứ 4, 10/01/2025',
+                time: '13:00 - 15:00 (2 giờ)',
+                participants: '45 người',
+                purpose: 'Họp CLB Lập trình - Giới thiệu dự án mới và phân công nhiệm vụ cho các thành viên.',
+                createdAt: '08/01/2025 lúc 10:00',
+                timeline: [
+                    { type: 'created', action: '🆕 Tạo đơn đặt phòng', user: 'Trần Thị Bình', time: '08/01/2025 lúc 10:00' },
+                    { type: 'approved', action: ' Phê duyệt đơn', user: 'Admin Nguyễn', time: '08/01/2025 lúc 14:30' }
+                ]
+            },
+            'BP004': {
+                code: 'BP004',
+                status: 'rejected',
+                userAvatar: 'PD',
+                userName: 'Phạm Thị Dung',
+                userRole: '👨‍🏫 Giảng viên',
+                userEmail: 'dung.pt@univ.edu.vn',
+                userPhone: '0901 234 567',
+                userDepartment: 'Hóa học',
+                roomCode: 'C101',
+                roomName: 'Phòng họp BGH',
+                date: 'Thứ 2, 08/01/2025',
+                time: '10:00 - 12:00 (2 giờ)',
+                participants: '25 người',
+                purpose: 'Workshop AI và ứng dụng trong giảng dạy - Hướng dẫn giảng viên sử dụng công cụ AI hỗ trợ giảng dạy.',
+                createdAt: '05/01/2025 lúc 08:45',
+                rejectionReason: 'Phòng đã có lịch họp quan trọng của Ban Giám Hiệu trong khung giờ này. Vui lòng chọn thời gian khác hoặc phòng khác.',
+                timeline: [
+                    { type: 'created', action: '🆕 Tạo đơn đặt phòng', user: 'Phạm Thị Dung', time: '05/01/2025 lúc 08:45' },
+                    { type: 'rejected', action: '❌ Từ chối đơn', user: 'Admin Nguyễn', time: '05/01/2025 lúc 16:20' }
+                ]
+            }
+        };
+
+        function filterBookings(status) {
+            const cards = document.querySelectorAll('.booking-card');
+            const tabs = document.querySelectorAll('.tab-btn');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            cards.forEach(card => {
+                if (status === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    if (card.dataset.status === status) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function viewDetail(code, status) {
+            currentBookingCode = code;
+            currentBookingStatus = status;
+            const data = bookingData[code];
+
+            if (!data) return;
+
+            // Update modal content
+            document.getElementById('modalTitle').textContent = `Chi tiết đơn ${code}`;
+            document.getElementById('detailCode').textContent = data.code;
+
+            // Status badge
+            let statusBadge = '';
+            if (data.status === 'pending') {
+                statusBadge = '<span class="status-badge pending">⏳ Chờ duyệt</span>';
+            } else if (data.status === 'approved') {
+                statusBadge = '<span class="status-badge approved">✓ Đã duyệt</span>';
+            } else {
+                statusBadge = '<span class="status-badge rejected">✕ Từ chối</span>';
+            }
+            document.getElementById('detailStatus').innerHTML = statusBadge;
+
+            // User info
+            document.getElementById('detailUserAvatar').textContent = data.userAvatar;
+            document.getElementById('detailUserName').textContent = data.userName;
+            document.getElementById('detailUserRole').textContent = data.userRole;
+            document.getElementById('detailUserEmail').textContent = data.userEmail;
+            document.getElementById('detailUserPhone').textContent = data.userPhone;
+            document.getElementById('detailUserDepartment').textContent = data.userDepartment;
+
+            // Room info
+            document.getElementById('detailRoomCode').textContent = data.roomCode;
+            document.getElementById('detailRoomName').textContent = data.roomName;
+
+            // Booking info
+            document.getElementById('detailDate').textContent = data.date;
+            document.getElementById('detailTime').textContent = data.time;
+            document.getElementById('detailParticipants').textContent = data.participants;
+            document.getElementById('detailPurpose').textContent = data.purpose;
+
+            // Timeline
+            const timelineHTML = data.timeline.map(item => `
+                <div class="timeline-item ${item.type}">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-action">${item.action}</div>
+                    <div class="timeline-user">Bởi: ${item.user}</div>
+                    <div class="timeline-time">${item.time}</div>
+                </div>
+            `).join('');
+            document.getElementById('detailTimeline').innerHTML = timelineHTML;
+
+            // Rejection reason
+            if (data.status === 'rejected' && data.rejectionReason) {
+                document.getElementById('rejectionSection').style.display = 'block';
+                document.getElementById('detailRejectionReason').textContent = data.rejectionReason;
+            } else {
+                document.getElementById('rejectionSection').style.display = 'none';
+            }
+
+            // Footer buttons
+            const btnApprove = document.getElementById('btnModalApprove');
+            const btnReject = document.getElementById('btnModalReject');
+
+            if (data.status === 'pending') {
+                btnApprove.style.display = 'flex';
+                btnReject.style.display = 'flex';
+            } else {
+                btnApprove.style.display = 'none';
+                btnReject.style.display = 'none';
+            }
+
+            // Show modal
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function approveBooking(code) {
+            if (confirm(`Bạn có chắc chắn muốn phê duyệt đơn ${code}?`)) {
+                alert(` Đã phê duyệt đơn ${code}\n\nThông báo đã được gửi đến người đặt phòng.`);
+                location.reload();
+            }
+        }
+
+        function approveFromModal() {
+            approveBooking(currentBookingCode);
+        }
+
+        function rejectBooking(code) {
+            const reason = prompt(`Nhập lý do từ chối đơn ${code}:`);
+            if (reason && reason.trim()) {
+                alert(`❌ Đã từ chối đơn ${code}\n\nLý do: ${reason}\n\nThông báo đã được gửi đến người đặt phòng.`);
+                location.reload();
+            } else if (reason !== null) {
+                alert('⚠️ Vui lòng nhập lý do từ chối!');
+            }
+        }
+
+        function rejectFromModal() {
+            rejectBooking(currentBookingCode);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('detailModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+
+</html>
