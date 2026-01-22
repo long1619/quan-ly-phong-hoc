@@ -27,11 +27,11 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="../user/edit-user.php?id=<?php echo $userLoginId['id']; ?>">
-                            <i class="bx bx-user me-2"></i>
-                            <span class="align-middle">Chỉnh sửa thông tin</span>
-                        </a>
-                    </li>
+                         <a class="dropdown-item" href="../user/profile-user.php">
+                             <i class="bx bx-user me-2"></i>
+                             <span class="align-middle">Chỉnh sửa thông tin</span>
+                         </a>
+                     </li>
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>

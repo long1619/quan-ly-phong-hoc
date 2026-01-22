@@ -108,7 +108,7 @@ function getRoomTypes($conn) {
  * Lấy thông tin đặt phòng
  */
 function getBookingsData($conn, $query) {
-    $sql = "SELECT b.*, r.room_code, r.room_name, u.fullname as user_name, u.email
+    $sql = "SELECT b.*, r.room_code, r.room_name, u.full_name as user_name, u.email
             FROM bookings b
             JOIN rooms r ON b.room_id = r.id
             JOIN users u ON b.user_id = u.id
@@ -190,7 +190,7 @@ function getStatistics($conn) {
  * Lấy thông tin người dùng
  */
 function getUsersData($conn, $query) {
-    $sql = "SELECT id, fullname, email, role, phone FROM users WHERE 1=1";
+    $sql = "SELECT id, full_name, email, role, phone FROM users WHERE 1=1";
 
     if (strpos($query, 'giảng viên') !== false) {
         $sql .= " AND role = 'teacher'";
@@ -198,7 +198,7 @@ function getUsersData($conn, $query) {
         $sql .= " AND role = 'student'";
     }
 
-    $sql .= " ORDER BY fullname LIMIT 20";
+    $sql .= " ORDER BY full_name LIMIT 20";
 
     $result = mysqli_query($conn, $sql);
     $users = [];
@@ -206,7 +206,7 @@ function getUsersData($conn, $query) {
     while ($row = mysqli_fetch_assoc($result)) {
         $users[] = [
             'id' => $row['id'],
-            'fullname' => $row['fullname'],
+            'full_name' => $row['full_name'],
             'email' => $row['email'],
             'role' => $row['role'],
             'phone' => $row['phone'] ?? 'N/A'
