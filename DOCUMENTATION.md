@@ -1,7 +1,7 @@
 # TÀI LIỆU HỆ THỐNG CHI TIẾT - QUẢN LÝ PHÒNG HỌC
 
 ## 1. TỔNG QUAN HỆ THỐNG
-Hệ thống **Quản lý phòng học** được thiết kế để số hóa quy trình quản lý, đăng ký và phê duyệt sử dụng phòng học, phòng họp trong tổ chức. Hệ thống phục vụ cho ba đối tượng chính: **Sinh viên/Người dùng**, **Giảng viên/Nhân viên** và **Quản trị viên**.
+Hệ thống **Quản lý phòng học** được thiết kế để số hóa quy trình quản lý, đăng ký và phê duyệt sử dụng phòng học, phòng họp trong tổ chức. Hệ thống phục vụ cho ba đối tượng chính: **Sinh viên**, **Giảng viên** và **Quản trị viên**.
 
 ---
 
@@ -106,7 +106,7 @@ Dự án được chia thành các phân hệ chức năng chính:
     *   Phân màu theo trạng thái:
         *   Màu Vàng/Cam: Chờ duyệt.
         *   Màu Xanh lá: Đã duyệt.
-        *   Màu Đỏ: Đã bảo trì/Không khả dụng.
+        *   Màu Xanh nhạt: Trống.
     *   Hiển thị popup thông tin chi tiết (Người đặt, SĐT, Mục đích) khi click vào sự kiện.
 
 #### 3.3.3. Màn hình Phê duyệt (`admin/approve/`)

@@ -5,7 +5,7 @@
  */
 
 // Gemini API Configuration
-define('GEMINI_API_KEY', 'AIzaSyD7jl7_F1kEH8q7bg2EYsYRNVqolAlB5Rs');
+define('GEMINI_API_KEY', 'AIzaSyC-X88k6BVD59CPmm_AchazHf7kB9WVQ-s');
 define(
     'GEMINI_API_ENDPOINT',
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'

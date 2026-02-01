@@ -131,6 +131,7 @@ if (!$news) {
         max-width: 100%;
         border-radius: 16px;
         margin: 2rem 0;
+        height: auto;
     }
 
     .action-floating-bar {

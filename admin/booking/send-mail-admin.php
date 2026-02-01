@@ -14,7 +14,7 @@ use PHPMailer\PHPMailer\Exception;
  */
 function sendBookingNotificationToAdmin($bookingData) {
     return sendEmail(
-        recipientEmail: 'duclong1619@gmail.com',
+        recipientEmail: 'quanphamct003@gmail.com',
         recipientName: 'Admin',
         bookingData: $bookingData,
         messageType: 'booking_notification'
@@ -170,17 +170,17 @@ function sendEmail($recipientEmail, $recipientName, $bookingData, $messageType =
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'duclong1619@gmail.com';
-        $mail->Password   = 'awxr jyco oqbb zmzu';
+        $mail->Username   = 'quanphamct003@gmail.com';
+        $mail->Password   = 'wprp cure ywlq hvlt';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
         $mail->CharSet    = 'UTF-8';
 
         // Người gửi
-        $mail->setFrom('duclong1619@gmail.com', 'Hệ thống Quản lý Phòng');
+        $mail->setFrom('quanphamct003@gmail.com', 'Hệ thống Quản lý Phòng');
 
         // Người nhận
-        $mail->addAddress('duclong1619@gmail.com', 'Admin');
+        $mail->addAddress('quanphamct003@gmail.com', 'Admin');
 
         // Nội dung email
         $mail->isHTML(true);
