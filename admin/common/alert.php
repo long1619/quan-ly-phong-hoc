@@ -33,6 +33,28 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php
 }
 ?>
+<?php
+// Thông báo thất bại / lỗi
+function showErrorAlert($message) {
+    if (!$message) return;
+    ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: '<?php echo addslashes($message); ?>',
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+    });
+});
+</script>
+<?php
+}
+?>
 <!-- Thông báo xóa -->
 <script>
 function setupDeleteConfirmation(selector, hrefTemplate, dataIdAttr = 'id', title = 'Bạn có chắc chắn?', text =

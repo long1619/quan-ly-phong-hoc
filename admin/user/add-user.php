@@ -248,7 +248,7 @@ if (!checkPermission($conn, $userRole, 'add_user')) {
                                     </div>
                                     <div class="mt-2">
                                         <button type="submit" class="btn btn-primary me-2" style="background: var(--primary-gradient); border: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">Lưu</button>
-                                        <button type="reset" class="btn btn-outline-secondary">Hủy</button>
+                                        <a href="list-user.php" class="btn btn-outline-secondary">Hủy</a>
                                     </div>
                                 </form>
 

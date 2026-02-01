@@ -5,16 +5,16 @@
  */
 
 // Gemini API Configuration
-define('GEMINI_API_KEY', 'AIzaSyD7jl7_F1kEH8q7bg2EYsYRNVqolAlB5Rs');
+define('GEMINI_API_KEY', 'AIzaSyDiukWejXHudeM1ck4Adb_HqW8aHl6Mtzs');
 define(
     'GEMINI_API_ENDPOINT',
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
 );
 
 // API Settings
-define('AI_MAX_TOKENS', 2048);
+define('AI_MAX_TOKENS', 5000);
 define('AI_TEMPERATURE', 0.7);
-define('AI_TIMEOUT', 30);
+define('AI_TIMEOUT', 60);
 
 // System Configuration
 define('AI_LANGUAGE', 'vi');        // Vietnamese

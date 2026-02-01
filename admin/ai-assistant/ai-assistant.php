@@ -573,6 +573,97 @@ input:checked + .slider:before {
     font-size: 14px;
     color: #4a5568;
 }
+
+/* Enhanced Markdown Styling */
+.markdown-content h1, .markdown-content h2, .markdown-content h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: #1a202c;
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 0.5rem;
+}
+
+.markdown-content h3 {
+    font-size: 1.1rem;
+    display: inline-block;
+    background: #f1f5f9;
+    padding: 4px 12px;
+    border-radius: 8px;
+    border-bottom: none;
+}
+
+.markdown-content p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+}
+
+.markdown-content ul, .markdown-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.markdown-content li {
+    margin-bottom: 0.5rem;
+}
+
+.markdown-content strong {
+    color: #4a5568;
+}
+
+.message.ai .markdown-content blockquote {
+    border-left: 4px solid #667eea;
+    padding-left: 1rem;
+    color: #4a5568;
+    margin: 1rem 0;
+    background: #f8fafc;
+    padding: 10px 15px;
+    border-radius: 0 8px 8px 0;
+}
+
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.markdown-content th, .markdown-content td {
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.markdown-content th {
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.markdown-content code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 0.9em;
+}
+
+/* Section Card Effect for AI Responses */
+.message.ai .message-bubble hr {
+    border: none;
+    border-top: 2px dashed #e2e8f0;
+    margin: 20px 0;
+}
+
+/* Custom "Card" look for sections starting with bold titles or headers */
+.message.ai .markdown-content h3 {
+    color: #667eea;
+    border-left: 3px solid #667eea;
+    border-radius: 0 4px 4px 0;
+    margin-left: -20px;
+    padding-left: 17px;
+}
 </style>
 
 </head>
@@ -678,25 +769,23 @@ input:checked + .slider:before {
                                             </div>
                                             Câu hỏi gợi ý
                                         </div>
-                                        <div class="quick-question" onclick="askQuestion('Có bao nhiêu phòng đang trống?')">
+                                        <div class="quick-question" onclick="askQuestion('Có bao nhiêu phòng đang trống trong ngày hôm nay (Từ 7h sáng đến 9h tối)?')">
                                             <i class='bx bx-check-circle'></i>
-                                            Có bao nhiêu phòng đang trống?
+                                            Có bao nhiêu phòng đang trống trong ngày hôm nay? (Từ 7h sáng đến 9h tối)
                                         </div>
                                         <div class="quick-question" onclick="askQuestion('Phòng nào có sức chứa trên 50 người?')">
                                             <i class='bx bx-group'></i>
                                             Phòng nào có sức chứa trên 50 người?
                                         </div>
+                                        <?php if ($userRole === 'admin'): ?>
                                         <div class="quick-question" onclick="askQuestion('Hiện có bao nhiêu đơn chờ duyệt?')">
                                             <i class='bx bx-time-five'></i>
                                             Hiện có bao nhiêu đơn chờ duyệt?
                                         </div>
-                                        <div class="quick-question" onclick="askQuestion('Phòng nào đang được sử dụng nhiều nhất?')">
-                                            <i class='bx bx-trending-up'></i>
-                                            Phòng nào được sử dụng nhiều nhất?
-                                        </div>
-                                        <div class="quick-question" onclick="askQuestion('Tìm phòng Lab CNTT còn trống')">
-                                            <i class='bx bx-search-alt'></i>
-                                            Tìm phòng Lab CNTT còn trống
+                                        <?php endif; ?>
+                                        <div class="quick-question" onclick="askQuestion('Có tất cả bao nhiêu phòng học?')">
+                                            <i class='bx bx-buildings'></i>
+                                            Có tất cả bao nhiêu phòng học?
                                         </div>
                                     </div>
                                 </div>
@@ -723,6 +812,9 @@ input:checked + .slider:before {
     <script src="../../assets/vendor/js/bootstrap.js"></script>
     <script src="../../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
     <script src="../../assets/vendor/js/menu.js"></script>
+
+    <!-- Marked.js for Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <!-- Main JS -->
     <script src="../../assets/js/main.js"></script>
@@ -816,27 +908,44 @@ input:checked + .slider:before {
 
             let roomsHTML = '';
             if (rooms && rooms.length > 0) {
-                roomsHTML = rooms.map(room => `
-                    <div class="room-result">
-                        <div class="room-result-header">
-                            <span class="room-code">${room.room_code}</span>
-                            <span class="room-status ${room.status}">${room.status_text}</span>
-                        </div>
-                        <div class="room-info">
-                            <div><i class='bx bx-buildings'></i> ${room.room_name}</div>
-                            <div><i class='bx bx-group'></i> Sức chứa: ${room.capacity}</div>
-                            <div><i class='bx bx-category'></i> ${room.type_name}</div>
-                            <div><i class='bx bx-map'></i> ${room.location || 'N/A'}</div>
-                        </div>
+                roomsHTML = `
+                    <div class="rooms-container mt-3">
+                        ${rooms.map(room => `
+                            <div class="room-result">
+                                <div class="room-result-header">
+                                    <span class="room-code">${room.room_code}</span>
+                                    <span class="room-status ${room.status}">${room.status_text}</span>
+                                </div>
+                                <div class="room-info">
+                                    <div><i class='bx bx-buildings'></i> ${room.room_name}</div>
+                                    <div><i class='bx bx-group'></i> Sức chứa: ${room.capacity}</div>
+                                    <div><i class='bx bx-category'></i> ${room.type_name}</div>
+                                    <div><i class='bx bx-map'></i> ${room.location || 'N/A'}</div>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
-                `).join('');
+                `;
+            }
+
+            // Parse markdown for AI messages
+            let formattedContent = text;
+            if (type === 'ai') {
+                // Configure marked
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true
+                });
+                formattedContent = `<div class="markdown-content">${marked.parse(text)}</div>`;
+            } else {
+                formattedContent = text.replace(/\n/g, '<br>');
             }
 
             messageDiv.innerHTML = `
                 <div class="message-avatar">${type === 'user' ? '👤' : '🤖'}</div>
                 <div class="message-content">
                     <div class="message-bubble">
-                        ${text}
+                        ${formattedContent}
                         ${roomsHTML}
                     </div>
                     <div class="message-time">${time}</div>
