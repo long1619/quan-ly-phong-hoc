@@ -56,7 +56,17 @@ function getRoomsData($conn, $query) {
 
     // Thêm điều kiện lọc dựa vào câu hỏi
     if (strpos($query, 'trống') !== false || strpos($query, 'available') !== false) {
-        $sql .= " AND r.status = 'available'";
+        $today = date('Y-m-d');
+        if (strpos($query, 'hôm nay') !== false || strpos($query, 'today') !== false) {
+            $sql .= " AND r.status != 'bao_tri' AND r.id NOT IN (
+                SELECT b.room_id FROM bookings b
+                WHERE b.booking_date = '$today'
+                AND b.status = 'da_duyet'
+                AND (b.start_time <= '21:00:00' AND b.end_time >= '07:00:00')
+            )";
+        } else {
+            $sql .= " AND r.status = 'trong'";
+        }
     }
 
     if (preg_match('/(\d+)\s*(người|person)/', $query, $matches)) {
@@ -116,9 +126,9 @@ function getBookingsData($conn, $query) {
 
     // Lọc theo trạng thái
     if (strpos($query, 'chờ duyệt') !== false || strpos($query, 'pending') !== false) {
-        $sql .= " AND b.status = 'pending'";
+        $sql .= " AND b.status = 'cho_duyet'";
     } elseif (strpos($query, 'đã duyệt') !== false || strpos($query, 'approved') !== false) {
-        $sql .= " AND b.status = 'approved'";
+        $sql .= " AND b.status = 'da_duyet'";
     }
 
     $sql .= " ORDER BY b.booking_date DESC, b.start_time DESC LIMIT 20";
@@ -155,15 +165,31 @@ function getStatistics($conn) {
     $stats['total_rooms'] = mysqli_fetch_assoc($result)['total'];
 
     // Phòng trống
-    $result = mysqli_query($conn, "SELECT COUNT(*) as total FROM rooms WHERE status = 'available'");
+    $result = mysqli_query($conn, "SELECT COUNT(*) as total FROM rooms WHERE status = 'trong' AND is_active = 1");
     $stats['available_rooms'] = mysqli_fetch_assoc($result)['total'];
 
+    // Tính toán số phòng trống trong ngày hôm nay (7h-21h)
+    $today = date('Y-m-d');
+    $sql_today = "SELECT COUNT(*) as total FROM rooms r
+                  WHERE r.is_active = 1
+                  AND r.status != 'bao_tri'
+                  AND r.id NOT IN (
+                      SELECT b.room_id FROM bookings b
+                      WHERE b.booking_date = '$today'
+                      AND b.status = 'da_duyet'
+                      AND (
+                          (b.start_time <= '21:00:00' AND b.end_time >= '07:00:00')
+                      )
+                  )";
+    $result_today = mysqli_query($conn, $sql_today);
+    $stats['available_today_7h_21h'] = mysqli_fetch_assoc($result_today)['total'];
+
     // Đơn chờ duyệt
-    $result = mysqli_query($conn, "SELECT COUNT(*) as total FROM bookings WHERE status = 'pending'");
+    $result = mysqli_query($conn, "SELECT COUNT(*) as total FROM bookings WHERE status = 'cho_duyet'");
     $stats['pending_bookings'] = mysqli_fetch_assoc($result)['total'];
 
     // Đơn đã duyệt
-    $result = mysqli_query($conn, "SELECT COUNT(*) as total FROM bookings WHERE status = 'approved'");
+    $result = mysqli_query($conn, "SELECT COUNT(*) as total FROM bookings WHERE status = 'da_duyet'");
     $stats['approved_bookings'] = mysqli_fetch_assoc($result)['total'];
 
     // Tổng người dùng
@@ -221,19 +247,20 @@ function getUsersData($conn, $query) {
  */
 function getStatusText($status) {
     $statusMap = [
-        'available' => 'Còn trống',
-        'occupied' => 'Đang sử dụng',
-        'maintenance' => 'Bảo trì'
+        'trong' => 'Còn trống',
+        'dang_su_dung' => 'Đang sử dụng',
+        'bao_tri' => 'Bảo trì'
     ];
     return $statusMap[$status] ?? $status;
 }
 
 function getBookingStatusText($status) {
     $statusMap = [
-        'pending' => 'Chờ duyệt',
-        'approved' => 'Đã duyệt',
-        'rejected' => 'Đã từ chối',
-        'cancelled' => 'Đã hủy'
+        'cho_duyet' => 'Chờ duyệt',
+        'da_duyet' => 'Đã duyệt',
+        'tu_choi' => 'Đã từ chối',
+        'da_huy' => 'Đã hủy',
+        'hoan_thanh' => 'Hoàn thành'
     ];
     return $statusMap[$status] ?? $status;
 }

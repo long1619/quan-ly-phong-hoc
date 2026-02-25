@@ -26,8 +26,8 @@ if (!empty($errors)) {
 
 // Cập nhật vào DB
 try {
-    $stmt = $conn->prepare("UPDATE room_types SET type_name = ?, description = ?, WHERE id = ?");
-    $stmt->bind_param("ssii", $type_name, $description, $id);
+    $stmt = $conn->prepare("UPDATE room_types SET type_name = ?, description = ? WHERE id = ?");
+    $stmt->bind_param("ssi", $type_name, $description, $id);
     $stmt->execute();
     $stmt->close();
 

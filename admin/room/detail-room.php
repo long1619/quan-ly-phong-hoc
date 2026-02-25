@@ -268,7 +268,7 @@
                                     </ul>
 
                                     <hr>
-                                    <div class="mt-4">
+                                    <div class="mt-4 pb-4">
                                         <?php if ($room['is_active'] == 1): ?>
                                             <?php if ($room['status'] == 'bao_tri'): ?>
                                                 <button class="btn btn-primary" onclick="showMaintenanceAlert('<?= htmlspecialchars($room['room_code']) ?>')">

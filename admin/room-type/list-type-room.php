@@ -10,6 +10,11 @@ require_once __DIR__ . '/../../config/connect.php';
 // Thông báo thành công
 $success = $_SESSION['success'] ?? null;
 unset($_SESSION['success']);
+
+// Thông báo lỗi
+$error = $_SESSION['error'] ?? null;
+unset($_SESSION['error']);
+
 require_once __DIR__ . '/../common/alert.php';
 require_once __DIR__ . '/../../helpers/helpers.php';
 
@@ -300,8 +305,9 @@ $result = $conn->query($sql);
     });
     </script>
 
-    <!-- Hiển thị thông báo thành công sau khi thêm mới, edit -->
+    <!-- Hiển thị thông báo thành công / lỗi sau khi thêm mới, edit, delete -->
     <?php showSuccessAlert($success); ?>
+    <?php showErrorAlert($error); ?>
 </body>
 
 </html>
