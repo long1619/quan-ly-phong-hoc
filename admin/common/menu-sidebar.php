@@ -441,14 +441,16 @@ function is_open($keywords) {
         </li>
         <?php endif; ?>
 
-        <?php if (checkPermission($conn, $userRole, 'view_history')): ?>
+        <?php if (checkPermission($conn, $userRole, 'view_canceled')): ?>
         <li class="menu-item <?php echo is_active('list-canceled-bookings.php'); ?>">
             <a href="../cancel/list-canceled-bookings.php" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-x-circle"></i>
                 <div data-i18n="Đơn đã hủy">Đơn đã hủy</div>
             </a>
         </li>
+        <?php endif; ?>
 
+        <?php if (checkPermission($conn, $userRole, 'view_history')): ?>
         <li class="menu-item <?php echo is_active('history-booking.php'); ?>">
             <a href="../history/history-booking.php" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-history"></i>

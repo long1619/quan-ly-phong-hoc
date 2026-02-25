@@ -22,6 +22,21 @@ function sendBookingNotificationToAdmin($bookingData) {
 }
 
 /**
+ * Gửi email trạng thái "Chờ duyệt" cho người dùng
+ *
+ * @param array $bookingData Thông tin đặt phòng
+ * @return bool True nếu gửi thành công, False nếu thất bại
+ */
+function sendPendingNotificationToUser($bookingData) {
+    return sendEmail(
+        recipientEmail: $bookingData['user_email'],
+        recipientName: $bookingData['user_name'],
+        bookingData: $bookingData,
+        messageType: 'pending'
+    );
+}
+
+/**
  * Gửi email phê duyệt đơn đặt phòng cho người dùng
  *
  * @param array $bookingData Thông tin đặt phòng
@@ -50,6 +65,23 @@ function sendRejectionNotificationToUser($bookingData, $rejectionReason = '') {
         recipientName: $bookingData['user_name'],
         bookingData: $bookingData,
         messageType: 'rejection'
+    );
+}
+
+/**
+ * Gửi email hủy đơn đặt phòng cho người dùng
+ *
+ * @param array $bookingData Thông tin đặt phòng
+ * @param string $cancelReason Lý do hủy
+ * @return bool True nếu gửi thành công, False nếu thất bại
+ */
+function sendCancellationNotificationToUser($bookingData, $cancelReason = '') {
+    $bookingData['cancel_reason'] = $cancelReason;
+    return sendEmail(
+        recipientEmail: $bookingData['user_email'],
+        recipientName: $bookingData['user_name'],
+        bookingData: $bookingData,
+        messageType: 'cancellation'
     );
 }
 
@@ -180,7 +212,7 @@ function sendEmail($recipientEmail, $recipientName, $bookingData, $messageType =
         $mail->setFrom('quanphamct003@gmail.com', 'Hệ thống Quản lý Phòng');
 
         // Người nhận
-        $mail->addAddress('quanphamct003@gmail.com', 'Admin');
+        $mail->addAddress($recipientEmail, $recipientName);
 
         // Nội dung email
         $mail->isHTML(true);
@@ -212,10 +244,14 @@ function getEmailSubject($messageType, $bookingData) {
     $bookingCode = $bookingData['booking_code'];
 
     switch ($messageType) {
+        case 'pending':
+            return "⏳ Đơn đặt phòng đang chờ duyệt - {$bookingCode}";
         case 'approval':
             return "✓ Đơn đặt phòng của bạn đã được phê duyệt - {$bookingCode}";
         case 'rejection':
             return "✕ Đơn đặt phòng của bạn bị từ chối - {$bookingCode}";
+        case 'cancellation':
+            return "🚫 Đơn đặt phòng đã bị hủy - {$bookingCode}";
         case 'booking_notification':
         default:
             return "Thông báo: Đơn đặt phòng mới - {$bookingCode}";
@@ -247,10 +283,11 @@ function getEmailTemplate($messageType, $bookingData) {
     $endTime = htmlspecialchars($bookingData['end_time']);
     $notes = !empty($bookingData['notes']) ? htmlspecialchars($bookingData['notes']) : 'Không có ghi chú';
     $rejectionReason = !empty($bookingData['rejection_reason']) ? htmlspecialchars($bookingData['rejection_reason']) : 'Chưa có';
+    $cancelReason = !empty($bookingData['cancel_reason']) ? htmlspecialchars($bookingData['cancel_reason']) : 'Không có lý do';
 
     // Xác định nội dung dựa trên loại tin nhắn
     $headerContent = getHeaderContent($messageType);
-    $statusCard = getStatusCard($messageType, $rejectionReason);
+    $statusCard = getStatusCard($messageType, $rejectionReason, $cancelReason);
     $actionContent = getActionContent($messageType);
 
     $template = <<<HTML
@@ -398,14 +435,25 @@ function getHeaderContent($messageType) {
             'badgeText' => 'YÊU CẦU XÁC NHẬN',
             'accentColor' => '#667eea'
         ],
+        'pending' => [
+            'title' => 'Đơn Đặt Phòng Đang Chờ Duyệt',
+            'subtitle' => 'Đơn đặt phòng của bạn đang trong trạng thái chờ duyệt',
+            'bgGradient' => 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            'badgeBg' => 'linear-gradient(135deg, #fff9e6 0%, #ffecb3 100%)',
+            'badgeGradient' => 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+            'badgeShadow' => '0 6px 20px rgba(245, 158, 11, 0.4)',
+            'badgeIcon' => '⏳',
+            'badgeText' => 'CHỜ DUYỆT',
+            'accentColor' => '#f59e0b'
+        ],
         'approval' => [
             'title' => 'Đơn Đặt Phòng Đã Phê Duyệt',
-            'subtitle' => 'Đơn đặt phòng của bạn đã được chấp phận',
+            'subtitle' => 'Đơn đặt phòng của bạn đã được chấp nhận',
             'bgGradient' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
             'badgeBg' => 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)',
             'badgeGradient' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
             'badgeShadow' => '0 6px 20px rgba(16, 185, 129, 0.4)',
-            'badgeIcon' => '',
+            'badgeIcon' => '✅',
             'badgeText' => 'ĐÃ PHÊ DUYỆT',
             'accentColor' => '#10b981'
         ],
@@ -416,9 +464,20 @@ function getHeaderContent($messageType) {
             'badgeBg' => 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
             'badgeGradient' => 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
             'badgeShadow' => '0 6px 20px rgba(239, 68, 68, 0.4)',
-            'badgeIcon' => '',
+            'badgeIcon' => '❌',
             'badgeText' => 'BỊ TỪ CHỐI',
             'accentColor' => '#ef4444'
+        ],
+        'cancellation' => [
+            'title' => 'Đơn Đặt Phòng Đã Bị Hủy',
+            'subtitle' => 'Đơn đặt phòng của bạn đã bị hủy',
+            'bgGradient' => 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
+            'badgeBg' => 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
+            'badgeGradient' => 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
+            'badgeShadow' => '0 6px 20px rgba(107, 114, 128, 0.4)',
+            'badgeIcon' => '🚫',
+            'badgeText' => 'ĐÃ HỦY',
+            'accentColor' => '#6b7280'
         ]
     ];
 
@@ -428,9 +487,26 @@ function getHeaderContent($messageType) {
 /**
  * Lấy card hiển thị trạng thái
  */
-function getStatusCard($messageType, $rejectionReason) {
+function getStatusCard($messageType, $rejectionReason, $cancelReason = '') {
     if ($messageType === 'booking_notification') {
         return '';
+    }
+
+    if ($messageType === 'pending') {
+        return <<<HTML
+                            <!-- Pending Message Card -->
+                            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 12px; padding: 25px; margin-bottom: 30px; border-left: 5px solid #f59e0b; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);">
+                                <div style="display: flex; align-items: start; gap: 12px;">
+                                    <span style="font-size: 28px;">⏳</span>
+                                    <div style="flex: 1;">
+                                        <p style="margin: 0 0 8px 0; color: #92400e; font-weight: 700; font-size: 18px;">Đơn của bạn đang chờ duyệt</p>
+                                        <p style="margin: 0; color: #78350f; line-height: 1.7; font-size: 15px;">
+                                            Đơn đặt phòng của bạn đã được ghi nhận và đang trong trạng thái chờ duyệt. Quản trị viên sẽ xử lý đơn của bạn sớm nhất có thể.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+HTML;
     }
 
     if ($messageType === 'approval') {
@@ -438,7 +514,7 @@ function getStatusCard($messageType, $rejectionReason) {
                             <!-- Approval Message Card -->
                             <div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 12px; padding: 25px; margin-bottom: 30px; border-left: 5px solid #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);">
                                 <div style="display: flex; align-items: start; gap: 12px;">
-                                    <span style="font-size: 28px;"></span>
+                                    <span style="font-size: 28px;">✅</span>
                                     <div style="flex: 1;">
                                         <p style="margin: 0 0 8px 0; color: #047857; font-weight: 700; font-size: 18px;">Đơn của bạn đã được phê duyệt!</p>
                                         <p style="margin: 0; color: #065f46; line-height: 1.7; font-size: 15px;">
@@ -456,11 +532,32 @@ HTML;
                             <!-- Rejection Message Card -->
                             <div style="background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-radius: 12px; padding: 25px; margin-bottom: 30px; border-left: 5px solid #ef4444; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);">
                                 <div style="display: flex; align-items: start; gap: 12px;">
-                                    <span style="font-size: 28px;">✕</span>
+                                    <span style="font-size: 28px;">❌</span>
                                     <div style="flex: 1;">
                                         <p style="margin: 0 0 8px 0; color: #7f1d1d; font-weight: 700; font-size: 18px;">Lý do từ chối</p>
                                         <p style="margin: 0; color: #991b1b; line-height: 1.7; font-size: 15px;">
                                             {$reasonDisplay}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+HTML;
+    }
+
+    if ($messageType === 'cancellation') {
+        $cancelDisplay = empty($cancelReason) ? 'Không có lý do được cung cấp' : $cancelReason;
+        return <<<HTML
+                            <!-- Cancellation Message Card -->
+                            <div style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border-radius: 12px; padding: 25px; margin-bottom: 30px; border-left: 5px solid #6b7280; box-shadow: 0 4px 12px rgba(107, 114, 128, 0.15);">
+                                <div style="display: flex; align-items: start; gap: 12px;">
+                                    <span style="font-size: 28px;">🚫</span>
+                                    <div style="flex: 1;">
+                                        <p style="margin: 0 0 8px 0; color: #1f2937; font-weight: 700; font-size: 18px;">Đơn đặt phòng đã bị hủy</p>
+                                        <p style="margin: 0 0 12px 0; color: #374151; line-height: 1.7; font-size: 15px;">
+                                            <strong>Lý do hủy:</strong> {$cancelDisplay}
+                                        </p>
+                                        <p style="margin: 0; color: #6b7280; line-height: 1.7; font-size: 14px;">
+                                            Nếu bạn cần đặt phòng mới, vui lòng tạo đơn đặt phòng khác.
                                         </p>
                                     </div>
                                 </div>
@@ -486,6 +583,10 @@ function getActionContent($messageType) {
 HTML;
     }
 
+    if ($messageType === 'pending') {
+        return '';
+    }
+
     if ($messageType === 'approval') {
         return <<<HTML
                             <!-- Approval Action -->
@@ -506,6 +607,10 @@ HTML;
                                 </a>
                             </div> -->
 HTML;
+    }
+
+    if ($messageType === 'cancellation') {
+        return '';
     }
 
     return '';

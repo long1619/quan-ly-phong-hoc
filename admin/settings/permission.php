@@ -43,7 +43,8 @@
                 'create_booking' => 'Tạo yêu cầu đặt phòng',
                 'cancel_booking' => 'Hủy đơn đặt',
                 'approve_booking' => 'Phê duyệt đơn (Admin)',
-                'view_history' => 'Xem lịch sử'
+                'view_history' => 'Xem lịch sử',
+                'view_canceled' => 'Xem đơn đã hủy'
             ]
         ],
         'user' => [

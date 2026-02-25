@@ -21,7 +21,17 @@ if (isset($_POST['booking_code']) && isset($_POST['cancel_reason'])) {
     }
 
     // Kiểm tra đơn có tồn tại và trạng thái cho phép hủy
-    $sql = "SELECT * FROM bookings WHERE booking_code = ?";
+    $sql = "
+        SELECT b.*,
+               u.email as user_email,
+               u.full_name as user_name,
+               r.room_code,
+               r.room_name
+        FROM bookings b
+        JOIN users u ON b.user_id = u.id
+        JOIN rooms r ON b.room_id = r.id
+        WHERE b.booking_code = ?
+    ";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $booking_code);
     $stmt->execute();
@@ -71,9 +81,20 @@ if (isset($_POST['booking_code']) && isset($_POST['cancel_reason'])) {
 
     if ($update_stmt->execute()) {
         $update_stmt->close();
+
+        // Gửi email thông báo hủy cho người dùng
+        require_once __DIR__ . '/../booking/send-mail-admin.php';
+        $emailSent = sendCancellationNotificationToUser($booking, $cancel_reason);
+
+        if ($emailSent) {
+            error_log("Cancellation email sent successfully for booking: " . $booking_code);
+        } else {
+            error_log("Failed to send cancellation email for booking: " . $booking_code);
+        }
+
         echo json_encode([
             'success' => true,
-            'message' => 'Đơn đặt phòng đã được hủy thành công!'
+            'message' => 'Đơn đặt phòng đã được hủy thành công! Email thông báo đã được gửi.'
         ]);
     } else {
         echo json_encode([

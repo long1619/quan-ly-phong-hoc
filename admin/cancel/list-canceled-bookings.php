@@ -11,8 +11,8 @@ include __DIR__ . '/../common/header.php';
 require_once __DIR__ . '/../../helpers/helpers.php';
 $userRole = $_SESSION['user_role'] ?? '';
 
-// Kiểm tra quyền xem lịch sử (bao gồm đơn đã hủy)
-if (!checkPermission($conn, $userRole, 'view_history')) {
+// Kiểm tra quyền xem đơn đã hủy
+if (!checkPermission($conn, $userRole, 'view_canceled')) {
     echo "<script>alert('Bạn không có quyền xem thông tin này!'); window.location.href='../dashboard/index.php';</script>";
     exit;
 }

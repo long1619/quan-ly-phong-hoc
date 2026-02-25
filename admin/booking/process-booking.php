@@ -202,8 +202,8 @@ try {
             require_once __DIR__ . '/send-mail-admin.php';
             sendBookingNotificationToAdmin($bookingData);
 
-            // Gửi email xác nhận cho người dùng
-            sendBookingNotificationToUser($bookingData);
+            // Gửi email thông báo "Chờ duyệt" cho người dùng
+            sendPendingNotificationToUser($bookingData);
         }
 
         $_SESSION['success'] = 'Đặt phòng thành công! Mã đặt phòng: ' . $booking_code . '. Vui lòng chờ phê duyệt.';
