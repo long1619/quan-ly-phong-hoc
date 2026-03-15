@@ -195,49 +195,50 @@ $result = $conn->query($sql);
                                 <?php endif; ?>
                             </div>
                             <div class="card-body">
-                                <table id="typeRoomTable" class="table table-striped" style="width:100%">
-                                    <thead>
-                                        <tr>
-                                            <th>Tên loại phòng</th>
-                                            <th>Mô tả</th>
-                                            <th>Ngày tạo</th>
-                                            <th>Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php if ($result && $result->num_rows > 0): ?>
-                                        <?php while ($row = $result->fetch_assoc()): ?>
-                                        <tr>
-                                            <!-- Tên loại phòng -->
-                                            <td><?php echo htmlspecialchars($row['type_name']); ?></td>
-                                            <!-- Mô tả -->
-                                            <td><?php echo htmlspecialchars($row['description']); ?></td>
-                                            <!-- Ngày tạo -->
-                                            <td>
-                                                <?php echo date('d/m/Y', strtotime($row['created_at'])); ?>
-                                            </td>
-                                            <!-- Hành động -->
-                                            <td>
-                                                <?php if (checkPermission($conn, $userRole, 'edit_room_type')): ?>
-                                                <a href="edit-type-room.php?id=<?php echo $row['id']; ?>"
-                                                    class="btn btn-sm btn-outline-info" title="Sửa">
-                                                    <i class="bx bx-edit"></i>
-                                                </a>
-                                                <?php endif; ?>
+                                <div class="table-responsive text-nowrap">
+                                    <table id="typeRoomTable" class="table table-striped" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Tên loại phòng</th>
+                                                <th>Mô tả</th>
+                                                <th>Ngày tạo</th>
+                                                <th>Hành động</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php if ($result && $result->num_rows > 0): ?>
+                                            <?php while ($row = $result->fetch_assoc()): ?>
+                                            <tr>
+                                                <!-- Tên loại phòng -->
+                                                <td><?php echo htmlspecialchars($row['type_name']); ?></td>
+                                                <!-- Mô tả -->
+                                                <td><?php echo htmlspecialchars($row['description']); ?></td>
+                                                <!-- Ngày tạo -->
+                                                <td>
+                                                    <?php echo date('d/m/Y', strtotime($row['created_at'])); ?>
+                                                </td>
+                                                <!-- Hành động -->
+                                                <td>
+                                                    <?php if (checkPermission($conn, $userRole, 'edit_room_type')): ?>
+                                                    <a href="edit-type-room.php?id=<?php echo $row['id']; ?>"
+                                                        class="btn btn-sm btn-outline-info" title="Sửa">
+                                                        <i class="bx bx-edit"></i>
+                                                    </a>
+                                                    <?php endif; ?>
 
-                                                <?php if (checkPermission($conn, $userRole, 'delete_room_type')): ?>
-                                                <a href="#" class="btn btn-sm btn-outline-danger btn-delete-type-room"
-                                                    data-id="<?= $row['id'] ?>" title="Xóa">
-                                                    <i class="bx bx-trash"></i>
-                                                </a>
-                                                <?php endif; ?>
-                                            </td>
-                                        </tr>
-                                        <?php endwhile; ?>
-                                        <?php endif; ?>
-                                    </tbody>
-
-                                </table>
+                                                    <?php if (checkPermission($conn, $userRole, 'delete_room_type')): ?>
+                                                    <a href="#" class="btn btn-sm btn-outline-danger btn-delete-type-room"
+                                                        data-id="<?= $row['id'] ?>" title="Xóa">
+                                                        <i class="bx bx-trash"></i>
+                                                    </a>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                            <?php endwhile; ?>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>

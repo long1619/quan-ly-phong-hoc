@@ -181,24 +181,24 @@
                             </div> -->
                             <div class="card-body">
                                 <!-- filter -->
-                                <div class="group-filter-button border-bottom">
-                                    <div class="d-flex justify-content-between align-items-center row">
-                                        <div class="col-md-3 user_role">
+                                <div class="group-filter-button border-bottom pb-3 mb-3">
+                                    <div class="row g-3">
+                                        <div class="col-12 col-md-3 user_role">
                                             <select id="UserRole" class="form-select text-capitalize">
                                                 <option value="">Chọn vai trò</option>
                                                 <option value="Giảng Viên">Giảng viên</option>
                                                 <option value="Sinh Viên">Sinh viên</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3 d-flex align-items-center">
+                                        <div class="col-12 col-md-3 d-none d-md-block">
                                             <!-- Removed UserStatus select -->
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-12 col-md-3">
                                             <input type="text" id="customSearch" class="form-control"
                                                 placeholder="Tìm kiếm...">
                                         </div>
-                                        <div class="col-md-3">
-                                            <div class="d-flex justify-content-end align-items-center">
+                                        <div class="col-12 col-md-3">
+                                            <div class="d-grid d-md-flex justify-content-md-end">
                                                 <?php if (checkPermission($conn, $userRole, 'add_user')): ?>
                                                 <a href="add-user.php" class="btn btn-primary" id="addNewRecord" style="background: var(--primary-gradient); border: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
                                                     <i class="bx bx-plus"></i>Thêm mới người dùng
@@ -210,9 +210,10 @@
                                 </div>
                                 <!-- end filter -->
 
-                                <table id="userTable" class="table table-striped" style="width:100%">
-                                    <thead>
-                                        <tr>
+                                <div class="table-responsive text-nowrap">
+                                    <table id="userTable" class="table table-striped" style="width:100%">
+                                        <thead>
+                                            <tr>
                                             <th>Avatar</th>
                                             <th>Họ tên</th>
                                             <th>Email</th>
@@ -271,8 +272,9 @@
                                             <td colspan="7" class="text-center">Không có người dùng nào.</td>
                                         </tr>
                                         <?php endif; ?>
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                         <!-- /DataTable Card -->

@@ -33,11 +33,20 @@ function is_open($keywords) {
 ?>
 <style>
 /* --- Sidebar Main --- */
-.layout-menu {
-    position: relative; /* Ensure absolute children are relative to this */
-    display: flex;
-    flex-direction: column; /* Main axis vertical */
-    height: 100% !important;
+@media (min-width: 1200px) {
+    .layout-menu {
+        position: relative; /* Ensure absolute children are relative to this */
+        display: flex;
+        flex-direction: column; /* Main axis vertical */
+        height: 100% !important;
+    }
+}
+
+/* Chiều rộng sidebar trên mobile */
+@media (max-width: 1199.98px) {
+    .layout-menu {
+        width: 280px !important;
+    }
 }
 
 .menu-inner {
@@ -56,6 +65,7 @@ function is_open($keywords) {
     justify-content: center;
     align-items: center;
     text-decoration: none;
+    position: relative; /* Add this to anchor the close button correctly */
 }
 .brand-wrapper {
     display: flex;
@@ -312,6 +322,35 @@ function is_open($keywords) {
     border-radius: 10px;
     margin-left: auto;
 }
+
+/* --- Close Button for Mobile --- */
+.close-menu-btn {
+    position: absolute;
+    right: 15px; /* Cố định ở góc phải */
+    top: 15px; 
+    color: #566a7f;
+    cursor: pointer;
+    background: #f3f4f6;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    z-index: 9999; /* Đảm bảo luôn nằm trên cùng */
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.close-menu-btn:hover {
+    background: #e2e8f0;
+    color: #ef4444;
+}
+
+.close-menu-btn i {
+    font-size: 1.2rem;
+}
 </style>
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
@@ -323,6 +362,11 @@ function is_open($keywords) {
                 <img src="../../assets/img/logo/school-building.png" alt="Logo" width="50" height="50" />
             </div>
             <span class="brand-title">Quản lý Đặt Phòng</span>
+        </a>
+
+        <!-- Close button for mobile -->
+        <a href="javascript:void(0);" class="layout-menu-toggle close-menu-btn d-xl-none">
+            <i class="bx bx-x"></i>
         </a>
     </div>
 
@@ -541,6 +585,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (parentSub) {
             parentSub.parentElement.classList.add('open');
         }
+    }
+
+    // Close menu logic for mobile
+    const closeBtn = document.querySelector('.close-menu-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.Helpers && typeof window.Helpers.toggleCollapsed === 'function') {
+                window.Helpers.toggleCollapsed();
+            } else {
+                // Fallback logic to remove the expanded class from html
+                document.documentElement.classList.remove('layout-menu-expanded');
+            }
+        });
     }
 });
 </script>

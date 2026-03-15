@@ -265,6 +265,33 @@
                     <!-- Content -->
 
                     <div class="container-xxl grow container-p-y">
+                        <style>
+                            .header-section {
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 30px;
+                            }
+                            @media (max-width: 767.98px) {
+                                .header-section {
+                                    flex-direction: column;
+                                    align-items: stretch;
+                                    gap: 15px;
+                                }
+                                .search-filter {
+                                    flex-direction: column;
+                                    align-items: stretch;
+                                    width: 100%;
+                                }
+                                .search-box {
+                                    min-width: 100% !important;
+                                }
+                                .btn-add-wrapper, .btn-add {
+                                    width: 100%;
+                                }
+                            }
+                        </style>
+
                         <!-- Header -->
                         <div class="header-section">
                             <div class="header-left">
@@ -278,7 +305,7 @@
                                     </div>
                                 </div>
                                 <?php if (checkPermission($conn, $userRole, 'add_room')): ?>
-                                <a href="add-room.php">
+                                <a href="add-room.php" class="btn-add-wrapper">
                                     <button class="btn btn-add">+ Thêm phòng</button>
                                 </a>
                                 <?php endif; ?>

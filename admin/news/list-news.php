@@ -139,20 +139,28 @@ while ($row = $result->fetch_assoc()) {
                 <?php include __DIR__ . '/../common/navbar.php'; ?>
                 <div class="content-wrapper">
                     <div class="container-xxl flex-grow-1 container-p-y">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                             <div>
                                 <h4 class="fw-bold mb-1">📰 Quản lý Tin tức</h4>
                                 <p class="text-muted mb-0">Xem và cập nhật các thông báo, tin tức hệ thống.</p>
                             </div>
                             <?php if (checkPermission($conn, $userRole, 'add_news')): ?>
-                            <a href="add-news.php" class="btn add-news-btn">
-                                <i class="bx bx-plus me-1"></i> Thêm tin tức
-                            </a>
+                            <div class="w-100 text-md-end" style="max-width: 100%;">
+                                <a href="add-news.php" class="btn add-news-btn w-100 justify-content-center" style="max-width: max-content;">
+                                    <i class="bx bx-plus me-1"></i> Thêm tin tức
+                                </a>
+                            </div>
+                            <!-- on mobile, width 100%, on md max-content -->
+                            <style>
+                                @media (max-width: 767.98px) {
+                                    .add-news-btn { max-width: 100% !important; }
+                                }
+                            </style>
                             <?php endif; ?>
                         </div>
 
                         <div class="table-card mt-4">
-                            <div class="table-responsive">
+                            <div class="table-responsive text-nowrap">
                                 <table class="table mb-0">
                                     <thead>
                                         <tr>
