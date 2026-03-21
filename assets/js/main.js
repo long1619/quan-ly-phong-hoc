@@ -115,4 +115,43 @@ let menu, animate;
 
   // Auto update menu collapsed/expanded based on the themeConfig
   window.Helpers.setCollapsed(true, false);
+
+  // Global submission spinner logic
+  const keywords = ['lưu', 'cập nhật', 'đăng ký', 'đăng kí', 'xác nhận', 'gửi'];
+
+  function addSpinner(btn) {
+    if (!btn || btn.disabled || btn.classList.contains('no-spinner')) return;
+    
+    const btnText = btn.innerText.toLowerCase();
+    const isTarget = keywords.some(kw => btnText.includes(kw)) || !btn.innerText.trim();
+    
+    if (isTarget) {
+      const spinner = document.createElement('span');
+      spinner.className = 'spinner-border spinner-border-sm me-2';
+      spinner.setAttribute('role', 'status');
+      spinner.setAttribute('aria-hidden', 'true');
+      
+      setTimeout(() => {
+        btn.disabled = true;
+        btn.prepend(spinner);
+      }, 0);
+    }
+  }
+
+  // 1. Handle form submissions
+  document.addEventListener('submit', function (e) {
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    addSpinner(submitButton);
+  });
+
+  // 2. Handle direct button clicks (for non-form or AJAX buttons)
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('button');
+    if (btn && btn.type !== 'submit') { 
+      addSpinner(btn);
+    }
+  });
+
+  // Export for manual use (like multi-step forms)
+  window.addSpinnerToButton = addSpinner;
 })();

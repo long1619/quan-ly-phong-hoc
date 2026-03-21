@@ -749,8 +749,13 @@
                 }
             }
 
-            const classes = `calendar-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${hasBookingClass}`;
-            html += `<div class="${classes}" onclick="selectDate(new Date(${year}, ${month}, ${day}))">${day}</div>`;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset về đầu ngày hôm nay
+            const isPast = date < today;
+
+            const classes = `calendar-day ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${hasBookingClass} ${isPast ? 'disabled' : ''}`;
+            const clickHandler = isPast ? '' : `onclick="selectDate(new Date(${year}, ${month}, ${day}))"`;
+            html += `<div class="${classes}" ${clickHandler}>${day}</div>`;
         }
 
         html += '</div>';
@@ -861,6 +866,13 @@
                     </div>`;
         } else {
             const dateStr = date.toISOString().split('T')[0];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (date < today) {
+                return `<div class="booking-slot" style="background: #f1f5f9; cursor: not-allowed; border: 1px solid #e2e8f0;"></div>`;
+            }
+            
             return `<div class="booking-slot available"
                         onclick="bookTimeSlot('${dateStr}', '${time}')"
                         title="Phòng trống - Click để đặt"></div>`;
@@ -937,6 +949,10 @@
     }
 
     function selectDate(date) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (date < today) return; // Không cho chọn ngày quá khứ
+
         selectedDate = new Date(date);
         initCalendar();
         if (currentView === 'day') {
@@ -1010,8 +1026,14 @@
     }
 
     function openBookingModal() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+            alert('Không thể đặt phòng cho ngày đã qua!');
+            return;
+        }
         const roomId = document.getElementById('roomSelect').value;
-        window.location.href = `booking-room.php?room_id=${roomId}`;
+        window.location.href = `booking-room.php?room_id=${roomId}&date=${selectedDate.toISOString().split('T')[0]}`;
     }
 
     // Initialize

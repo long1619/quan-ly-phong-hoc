@@ -410,19 +410,37 @@
                                             </div>
                                         </div>
 
-                                        <!-- Giờ -->
                                         <div class="mb-3">
                                             <label class="form-label">Giờ <span class="text-danger">*</span></label>
                                             <div class="time-row">
                                                 <div class="time-input-group">
-                                                    <input type="time" class="form-control" id="startTime"
-                                                        name="start_time" min="07:00" max="21:00" />
-                                                    <!-- <i class="bx bx-time time-input-icon"></i> -->
+                                                    <select class="form-select" id="startTime" name="start_time">
+                                                        <?php
+                                                            for ($h = 7; $h <= 21; $h++) {
+                                                                foreach (['00', '30'] as $m) {
+                                                                    $time = sprintf('%02d:%s', $h, $m);
+                                                                    $selected = (isset($old['start_time']) && $old['start_time'] == $time) ? 'selected' : '';
+                                                                    echo "<option value=\"$time\" $selected>$time</option>";
+                                                                }
+                                                            }
+                                                        ?>
+                                                    </select>
                                                 </div>
                                                 <div class="time-input-group">
-                                                    <input type="time" class="form-control" id="endTime"
-                                                        name="end_time" min="07:00" max="21:00" />
-                                                    <!-- <i class="bx bx-time time-input-icon"></i> -->
+                                                    <select class="form-select" id="endTime" name="end_time">
+                                                        <?php
+                                                            for ($h = 7; $h <= 21; $h++) {
+                                                                foreach (['00', '30'] as $m) {
+                                                                    $time = sprintf('%02d:%s', $h, $m);
+                                                                    $selected = (isset($old['end_time']) && $old['end_time'] == $time) ? 'selected' : '';
+                                                                    echo "<option value=\"$time\" $selected>$time</option>";
+                                                                    if ($h == 21 && $m == '00') break; 
+                                                                }
+                                                            }
+                                                            $selected2130 = (isset($old['end_time']) && $old['end_time'] == '21:30') ? 'selected' : '';
+                                                            echo "<option value=\"21:30\" $selected2130>21:30</option>";
+                                                        ?>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="time-labels">
@@ -611,6 +629,28 @@
                 });
                 return false;
             }
+
+            // Check if time is in the past (for today)
+            const now = new Date();
+            const selectedDate = new Date(date);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            if (selectedDate.getTime() === today.getTime()) {
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+                const [startHour, startMin] = startTime.split(':').map(Number);
+                
+                if (startHour < currentHour || (startHour === currentHour && startMin <= currentMinute)) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Thời gian không hợp lệ',
+                        text: 'Giờ bắt đầu không được nhỏ hơn giờ hiện tại (' + currentHour + ':' + (currentMinute < 10 ? '0' + currentMinute : currentMinute) + ')'
+                    });
+                    return false;
+                }
+            }
         } else if (step === 2) {
             const purpose = document.getElementById('purpose').value;
             const attendees = document.getElementById('attendees').value;
@@ -716,6 +756,9 @@
                 return;
             }
 
+            if (window.addSpinnerToButton) {
+                window.addSpinnerToButton(document.getElementById('btn-next'));
+            }
             document.getElementById('bookingForm').submit();
         }
     }

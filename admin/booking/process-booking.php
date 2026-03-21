@@ -53,6 +53,15 @@ if ($start_time < '07:00' || $end_time > '21:00') {
     $errors[] = 'Chỉ cho phép đặt phòng từ 07:00 sáng đến 21:00 tối.';
 }
 
+// Kiểm tra giờ quá khứ nếu đặt cùng ngày hiện tại
+$current_date = date('Y-m-d');
+if ($booking_date === $current_date) {
+    $current_time = date('H:i');
+    if ($start_time <= $current_time) {
+        $errors[] = 'Giờ bắt đầu không được nhỏ hơn giờ hiện tại (' . $current_time . ').';
+    }
+}
+
 if ($purpose === '') {
     $errors[] = 'Vui lòng nhập mục đích sử dụng.';
 }
